@@ -78,16 +78,21 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
   }
 
 	// wait rx1 window
-  while((digitalRead(RFM_pins.DIO0) != HIGH) && (millis() - prevTime < Receive_Delay_1));
+  while((digitalRead(RFM_pins.DIO0) != HIGH) && (millis() - prevTime < Receive_Delay_1)){
+	  yield();
+  }
 
   //Get data
+  	yield();
 	LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
 	*RFM_Command = NO_RFM_COMMAND;
 
 	if (Data_Rx->Counter==0)
 	{
 		// wait rx2 window
-		while((digitalRead(RFM_pins.DIO0) != HIGH) && (millis() - prevTime < Receive_Delay_2));
+		while((digitalRead(RFM_pins.DIO0) != HIGH) && (millis() - prevTime < Receive_Delay_2)){
+			yield();
+		}
 
 		//Get data
 		// TODO
@@ -406,15 +411,15 @@ void LORA_Receive_Data(sBuffer *Data_Rx, sLoRa_Session *Session_Data, sLoRa_OTAA
 						Data_Rx->Data[i] = RFM_Data[Data_Location + i];
 					}
 
-         //Check frame port fiels. When zero it is a mac command message encrypted with NwkSKey
-         if(Message->Frame_Port == 0x00)
-         {
-          Encrypt_Payload(Data_Rx, Session_Data->NwkSKey, Message);
-         }
-         else
-         {
-          Encrypt_Payload(Data_Rx, Session_Data->AppSKey, Message);
-         }
+					//Check frame port fiels. When zero it is a mac command message encrypted with NwkSKey
+					if(Message->Frame_Port == 0x00)
+					{
+					Encrypt_Payload(Data_Rx, Session_Data->NwkSKey, Message);
+					}
+					else
+					{
+					Encrypt_Payload(Data_Rx, Session_Data->AppSKey, Message);
+					}
 
 					Message_Status = MESSAGE_DONE;
 				}

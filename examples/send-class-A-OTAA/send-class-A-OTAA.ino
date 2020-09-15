@@ -13,11 +13,11 @@
 #include <lorawan.h>
 
 // OTAA credentials
-const char *devEui = "0000000000000000";
-const char *appEui = "0000000000000000";
-const char *appKey = "00000000000000000000000000000000";
+const char *devEui = "00491A26CBCA8EBE";
+const char *appEui = "70B3D57ED003439A";
+const char *appKey = "3F5DB0BBD8A374FD85353DE233D56048";
 
-const unsigned long interval = 10000;    // 10 s interval to send message
+const unsigned long interval = 180000;    // 10 s interval to send message
 unsigned long previousMillis = 0;  // will store last time message sent
 unsigned int counter = 0;     // message counter
 
@@ -26,13 +26,14 @@ char outStr[255];
 byte recvStatus = 0;
 
 const sRFM_pins RFM_pins = {
-  .CS = 20,
-  .RST = 9,
-  .DIO0 = 0,
-  .DIO1 = 1,
-  .DIO2 = 2,
-  .DIO5 = 15,
+  .CS = 15,
+  .RST = 16,
+  .DIO0 = 5,
+  .DIO1 = 4,
+  .DIO2 = -1,
+  .DIO5 = -1,
 };
+
 
 void setup() {
   // Setup loraid access
@@ -48,7 +49,7 @@ void setup() {
   lora.setDeviceClass(CLASS_A);
 
   // Set Data Rate
-  lora.setDataRate(SF9BW125);
+  lora.setDataRate(SF7BW125);
 
   // set channel to random
   lora.setChannel(MULTI);
@@ -65,6 +66,7 @@ void setup() {
     isJoined = lora.join();
     
     //wait for 10s to try again
+    yield();
     delay(10000);
   }while(!isJoined);
   Serial.println("Joined to network");
@@ -75,12 +77,12 @@ void loop() {
   if(millis() - previousMillis > interval) {
     previousMillis = millis(); 
 
-    sprintf(myStr, "Counter-%d", counter); 
+    sprintf(myStr, "Counter-%dgg", counter); 
 
     Serial.print("Sending: ");
     Serial.println(myStr);
     
-    lora.sendUplink(myStr, strlen(myStr), 0, 1);
+    lora.sendUplink(myStr, 12, 0, 1);
     counter++;
   }
 

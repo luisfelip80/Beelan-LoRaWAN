@@ -1,9 +1,9 @@
 #include <lorawan.h>
 
 //ABP Credentials 
-const char *devAddr = "00000000";
-const char *nwkSKey = "00000000000000000000000000000000";
-const char *appSKey = "00000000000000000000000000000000";
+const char *devEui = "003F22F6723E38B1";
+const char *appEui = "70B3D57ED003439A";
+const char *appKey = "AFFFE84E8314E84044E0F75A4CDD940C";
 
 const unsigned long interval = 20000;    // 10 s interval to send message
 unsigned long previousMillis = 0;  // will store last time message sent
@@ -13,11 +13,12 @@ char myStr[50];
 char outStr[255];
 byte recvStatus = 0;
 
+
 const sRFM_pins RFM_pins = {
-  .CS = 6,
-  .RST = 7,
-  .DIO0 = 8,
-  .DIO1 = 9,
+  .CS = 15,
+  .RST = 16,
+  .DIO0 = 5,
+  .DIO1 = 4,
   .DIO2 = -1,
   .DIO5 = -1,
 };
@@ -60,7 +61,7 @@ void loop() {
     Serial.print("Sending: ");
     Serial.println(myStr);
     
-    lora.sendUplink(myStr, strlen(myStr), 0, 1);
+    lora.sendUplink(myStr, 10, 0, 1);
     counter++;
   }
 
